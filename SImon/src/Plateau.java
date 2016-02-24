@@ -1,27 +1,23 @@
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.StringTokenizer;
 
-public class Plateau {
-    private double barreH;
-    private double barreV;
-    private int longeur;
-    private int largeur;
+// faire toDot, symetrie
+public class Plateau implements Configuration{
+    private double barre; //sert a definir les --
+    private int longeur; // taille |
+    private int largeur; // taille --
+    private static char[] coord ={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 
     public Plateau(){
-        this.barreH=0;
-        this.barreV=0;
+        this.barre=0;
         this.longeur=0;
         this.largeur=0;
     }
 
     public Plateau(int longeur,int largeur){
-        this(0,0,longeur,largeur);
+        this(0,longeur,largeur);
     }
 
-    public Plateau(double barreH, double barreV ,int longeur,int largeur){
-        this.barreH=barreH;
-        this.barreV=barreV;
+    public Plateau(double barre,int longeur,int largeur){
+        this.barre=barre;
         if(longeur>0)
             this.longeur=longeur;
         if(largeur>0)
@@ -29,114 +25,64 @@ public class Plateau {
     }
 
     public String toString(){
-        String s="";
-        int l;
-        double h=barreH;
-        double v=barreV;
-        System.out.println(h);
-        System.out.println(v);
-        double pow=0;
-        for(int i=0;i<2*longeur+1;i++) {
+        String s="   ";
+        double tailleColone=Math.pow(10,largeur-1);
+        double tailleLigne=Math.pow(10,largeur);
+        double etat,etatb;
+        double colone=(int)barre;
+        double ligne=barre*Math.pow(tailleLigne,longeur-1)-colone*Math.pow(tailleLigne,longeur-1);
+        for(int i=0;i<=largeur;i++)
+            s+=coord[i]+"  ";
+        s+="\n1  ";
+        for(int i=0;i<largeur;i++)
+            s+="*--";
+        s+="*\n";
+        for(int i=0;i<(2*longeur-1);i++){
             if(i%2==0) {
-                //ligne de --
-                pow=Math.pow(10,3+3*(2-(i/2)));
-                l=(int)(h/pow);
-                h=h-l*pow;
-                for(int j=largeur-1;j>-1;j--)
-                    if((int)(l/Math.pow(10,j)%10)==0) {
-                        s += "*  ";
-                    }else {
-                        s += "*--";
-                    }
-                s+="*\n";
-            }else {
-                // ligne de |
-                switch(i) {
-                    case 1:
-                        pow=Math.pow(10,8);
-                        break;
-                    case 3:
-                        pow=Math.pow(10,4);
-                        break;
-                    case 5:
-                        pow=Math.pow(10,0);
-                        break;
+                s+="   |  ";
+                etat=(int)(colone/(Math.pow(tailleColone,longeur-(i/2)-1)));
+                colone-=etat*(Math.pow(tailleColone,longeur-(i/2)-1));
+                for(int j=1;j<largeur;j++){
+                    etatb=(int)(etat/Math.pow(10,largeur-j-1));
+                    etat-=etatb*Math.pow(10,largeur-j-1);
+                    if(etatb==0)
+                        s+="   ";
+                    else
+                        s+="|  ";
                 }
-                l=(int)(v/pow);
-                v=v-l*pow;
-                for(int j=largeur;j>-1;j--)
-                    if((int)(l/Math.pow(10,j)%10)==0) {
-                        s += "   ";
-                    }else {
-                        s += "|  ";
-                    }
-                s+="\n";
+                s+="|\n";
+            }else{
+                s+=(i/2+2)+"  ";
+                etat = (int) (ligne / (Math.pow(tailleLigne, longeur -1- ((i+1)/2))));
+                ligne -= etat * (Math.pow(tailleLigne, longeur - 1 - ((i+1)/2)));
+                for(int j=0;j<largeur;j++){
+                    etatb=(int)(etat/Math.pow(10,largeur-j-1));
+                    etat-=etatb*Math.pow(10,largeur-j-1);
+                    if(etatb==0)
+                        s+="*  ";
+                    else
+                        s+="*--";
+                }
+                s+="*\n";
             }
         }
+        s+=longeur+1+"  ";
+        for(int i=0;i<largeur;i++)
+            s+="*--";
+        s+="*\n";
         return s;
     }
 
-/*
+    public double getBarre(){
+        return barre;
+    }
+
     public int getLongeur() {
         return longeur;
     }
 
     public int getLargeur() {
         return largeur;
-    }
-
-    public boolean symetrique(Plateau p){
-        if(this.getStatue().equals(p.getStatue()))
-            return true;
-        if(this.getLargeur()!=p.getLargeur())
-            return false;
-        if(this.getLongeur()!=p.getLongeur())
-            return false;
-        return this.symetrieV(p) || this.symetrieH(p) || this.symetrieD(p);
-    }
-
-    private boolean symetrieV(Plateau p) {
-        String s1 = this.getStatue().toString();
-        StringTokenizer temp =new StringTokenizer(s1,".");
-        temp.nextToken();
-        s1=temp.nextToken();
-        String s2 = p.getStatue().toString();
-        temp =new StringTokenizer(s2,".");
-        temp.nextToken();
-        s2=temp.nextToken();
-        for (int i = 0; i < this.getLongeur();i = i + this.getLargeur() + this.getLongeur()) {
-            for (int j = i; j < this.getLargeur()+this.getLongeur(); j++) {
-                if(j<this.getLargeur()-1) {
-                    if (s1.charAt(j) != s2.charAt(this.getLargeur() + j - 1))
-                        return false;
-                }else {
-                    if (s1.charAt(j) != s2.charAt(this.getLongeur() + j - 1))
-                        return false;
-                }
-            }
-        }
-        return true;
-    }
-    private boolean symetrieH(Plateau p){
-        return false;
-    }
-    private boolean symetrieD(Plateau p){
-        String s1 = this.getStatue().toString();
-        StringTokenizer temp =new StringTokenizer(s1,".");
-        temp.nextToken();
-        s1=temp.nextToken();
-        String s2 = p.getStatue().toString();
-        temp =new StringTokenizer(s2,".");
-        temp.nextToken();
-        s2=temp.nextToken();
-        System.out.println(s1);
-        System.out.println(s2.charAt(11));
-        for (int i = 0; i < s1.length()/2;i ++) {
-            System.out.println(s1.charAt(i) + "("+i+") = " + s2.charAt(s2.length() - 1 - i)+"("+(s2.length() - 1 - i)+")");
-            if (s1.charAt(i) != s2.charAt(s2.length() - 1 - i))
-                return false;
-        }
-        return true;
     }
 
     @Override
@@ -148,9 +94,33 @@ public class Plateau {
             return false;
         if(this.largeur!=p.largeur)
             return false;
-        if(!this.symetrique(p))
+        if(this.getBarre()!=p.getBarre())
             return false;
         return true;
     }
-    */
+
+    public Plateau jouer(String depart,String arriver){
+        char coordC1=depart.charAt(0),coordN1=depart.charAt(1),coordC2=arriver.charAt(0),coordN2=arriver.charAt(1);
+        int coordN,coordC;
+        if(coordC1==coordC2){
+            //barre verticale
+            coordN=Integer.min(Integer.parseInt(""+coordN1),Integer.parseInt(""+coordN2));
+            coordC=Character.getNumericValue(coordC1)-Character.getNumericValue('A');
+            return new Plateau(barre+Math.pow(10,Math.pow(largeur-1,largeur-coordN)+largeur-1-coordC),longeur,largeur);
+        }else
+            if(coordN1==coordN2){
+                //barre horizontal
+                coordN=Integer.parseInt(""+coordN1)-2;
+                if(coordN==0)
+                    coordC=Integer.min(Character.getNumericValue(coordC1)-Character.getNumericValue('A'),Character.getNumericValue(coordC2)-Character.getNumericValue('A'));
+                else
+                    coordC=Integer.min(Character.getNumericValue(coordC1)-Character.getNumericValue('A'),Character.getNumericValue(coordC2)-Character.getNumericValue('A'))+1;
+                return new Plateau(barre+Math.pow(10,-(Math.pow(largeur,coordN)+coordC)),longeur,largeur);
+            }else
+                throw new IllegalArgumentException("coup imposssible");
+    }
+
+    public String toDot(String label){
+        return "";
+    }
 }
