@@ -1,3 +1,4 @@
 public interface Joueur {
-    public void jouer(Configuration config);
+    public boolean jouer(Configuration config);
+    public int getPoint();
 }

@@ -3,15 +3,41 @@ public class Jeu {
     private Joueur j1;
     private Joueur j2;
     private int tours;
+    private Joueur prochain;
 
     public Jeu(int x,int y) {
         tours = 1;
         j1 = new Humain();
-        j2 = new IA();
+        j2 = new Simplet();
         config = new Plateau(x,y);
+        prochain=j1;
     }
 
     public boolean termine(){
-        return tours==(config.getLargeur()-1)*config.getLongeur()+(config.getLongeur()-1)*config.getLargeur();
+        return config.termine();
+    }
+
+    public void nextTurn(){
+        boolean b;
+        do {
+            System.out.println("tour "+tours);
+            System.out.println(config);
+            tours++;
+            if(config.termine())
+                b=false;
+            else
+                b=prochain.jouer(config);
+        }while(b);
+        if(prochain.equals(j1))
+            prochain=j2;
+        else
+            prochain=j1;
+    }
+
+    public String gagnant(){
+        if(j1.getPoint()<j2.getPoint())
+            return "Le gagnant est l'ordinateur avec "+j2.getPoint()+" points";
+        else
+            return "vous etes le gagnant avec "+j1.getPoint()+" points";
     }
 }

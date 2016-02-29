@@ -1,8 +1,10 @@
 public interface Configuration {
-    public Configuration jouer(String depart,String arriver);
+    public boolean jouer(String depart,String arriver);
     public String toDot(String label);
-    public double getBarre();
+    public int[][] getTableau();
     public int getLongeur();
     public int getLargeur();
-
+    public boolean estPossible(String s1,String s2);
+    public String[] carrePossible();
+    public boolean termine();
 }
