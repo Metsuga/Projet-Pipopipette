@@ -11,7 +11,12 @@ public class Humain implements Joueur{
     }
 
     @Override
-    public boolean jouer(Configuration config) {
+    public Configuration jouer(Configuration config,Graphe g) {
+        if(config.carrePossible().length==2) {
+            System.out.println(config+"\n completion automaique");
+            config = Generateur.complete(config);
+        }
+        System.out.println(config);
         String reponse,s1="",s2="";
         StringTokenizer st;
         boolean erreur=false;
@@ -38,11 +43,7 @@ public class Humain implements Joueur{
                 erreur=true;
             }
         }while(erreur);
-        if(config.jouer(s1,s2)) {
-            point++;
-            return true;
-        }else
-            return false;
+        return config.jouer(s1,s2);
     }
 
     @Override

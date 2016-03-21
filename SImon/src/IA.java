@@ -1,4 +1,4 @@
-public class IA implements Joueur{
+/*public class IA implements Joueur{
     int point;
 
     public IA(){
@@ -15,3 +15,4 @@ public class IA implements Joueur{
         return point;
     }
 }
+*/

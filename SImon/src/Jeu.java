@@ -1,9 +1,12 @@
+import java.io.IOException;
+
 public class Jeu {
     private Configuration config;
     private Joueur j1;
     private Joueur j2;
     private int tours;
     private Joueur prochain;
+    private Graphe g;
 
     public Jeu(int x,int y) {
         tours = 1;
@@ -11,6 +14,7 @@ public class Jeu {
         j2 = new Simplet();
         config = new Plateau(x,y);
         prochain=j1;
+        g=new Graphe(x,y);
     }
 
     public boolean termine(){
@@ -18,16 +22,9 @@ public class Jeu {
     }
 
     public void nextTurn(){
-        boolean b;
-        do {
-            System.out.println("tour "+tours);
-            System.out.println(config);
-            tours++;
-            if(config.termine())
-                b=false;
-            else
-                b=prochain.jouer(config);
-        }while(b);
+        System.out.println("tour "+tours);
+        tours++;
+        config = prochain.jouer(config, g);
         if(prochain.equals(j1))
             prochain=j2;
         else
@@ -39,5 +36,9 @@ public class Jeu {
             return "Le gagnant est l'ordinateur avec "+j2.getPoint()+" points";
         else
             return "vous etes le gagnant avec "+j1.getPoint()+" points";
+    }
+
+    public void toDot(String file) throws IOException{
+        g.toDot(file);
     }
 }
